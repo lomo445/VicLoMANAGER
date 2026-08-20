@@ -1,11 +1,15 @@
 import { createClient } from "@/lib/supabase/server"
 import { NewOrderDialog } from "@/components/orders/NewOrderDialog"
+import { AlertTriangle } from "lucide-react"
 
 export default async function OrdersPage() {
   const supabase = createClient()
   const { data: orders } = await supabase.from('orders').select('*, order_items(*, products(name))').order('created_at', { ascending: false })
   const { data: products } = await supabase.from('products').select('*')
   const { data: extrasCatalog } = await supabase.from('extras_catalog').select('*')
+
+  const today = new Date()
+  today.setHours(0,0,0,0)
 
   return (
     <div className="space-y-6">
@@ -28,37 +32,46 @@ export default async function OrdersPage() {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order: any) => (
-                <tr key={order.id} className="border-b last:border-0 hover:bg-muted/50 transition-colors">
-                  <td className="py-3 px-2 font-medium">{order.client_name}</td>
-                  <td className="py-3 px-2">
-                    <div className="flex flex-col gap-1">
-                      {order.order_items && order.order_items.length > 0 ? (
-                        order.order_items.map((item: any) => (
-                          <span key={item.id} className="text-xs bg-muted px-2 py-1 rounded-md border border-border inline-block w-max">
-                            {item.quantity}x {item.products?.name || 'Prodotto eliminato'}
-                          </span>
-                        ))
-                      ) : (
-                        <span className="text-muted-foreground italic">Prodotto non specificato</span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="py-3 px-2 text-muted-foreground">{order.commission_date || new Date(order.created_at).toISOString().split('T')[0]}</td>
-                  <td className="py-3 px-2">{order.expected_delivery_date || '-'}</td>
-                  <td className="py-3 px-2 capitalize">
-                    <span className={`px-2 py-1 rounded-full text-xs font-semibold
-                      ${order.status === 'consegnato' ? 'bg-green-500/20 text-green-500' : 
-                        order.status === 'da_stampare' ? 'bg-muted text-muted-foreground' : 
-                        order.status === 'pronto' ? 'bg-blue-500/20 text-blue-500' : 
-                        'bg-yellow-500/20 text-yellow-500'
-                      }`}>
-                      {order.status.replace('_', ' ')}
-                    </span>
-                  </td>
-                  <td className="py-3 px-2 text-right font-semibold text-green-500">€{order.final_selling_price}</td>
-                </tr>
-              ))}
+              {orders.map((order: any) => {
+                const isDelayed = order.status !== 'consegnato' && order.expected_delivery_date && new Date(order.expected_delivery_date) < today
+                
+                return (
+                  <tr key={order.id} className={`border-b last:border-0 hover:bg-muted/50 transition-colors ${isDelayed ? 'bg-destructive/5' : ''}`}>
+                    <td className="py-3 px-2 font-medium">{order.client_name}</td>
+                    <td className="py-3 px-2">
+                      <div className="flex flex-col gap-1">
+                        {order.order_items && order.order_items.length > 0 ? (
+                          order.order_items.map((item: any) => (
+                            <span key={item.id} className="text-xs bg-muted px-2 py-1 rounded-md border border-border inline-block w-max">
+                              {item.quantity}x {item.products?.name || 'Prodotto eliminato'}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-muted-foreground italic">Prodotto non specificato</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="py-3 px-2 text-muted-foreground">{order.commission_date || new Date(order.created_at).toISOString().split('T')[0]}</td>
+                    <td className="py-3 px-2">
+                      <div className="flex items-center gap-2">
+                        {order.expected_delivery_date || '-'}
+                        {isDelayed && <span className="flex items-center gap-1 text-[10px] uppercase font-bold bg-destructive text-destructive-foreground px-1.5 py-0.5 rounded-sm"><AlertTriangle className="w-3 h-3"/> Ritardo</span>}
+                      </div>
+                    </td>
+                    <td className="py-3 px-2 capitalize">
+                      <span className={`px-2 py-1 rounded-full text-xs font-semibold
+                        ${order.status === 'consegnato' ? 'bg-green-500/20 text-green-500' : 
+                          order.status === 'da_stampare' ? 'bg-muted text-muted-foreground' : 
+                          order.status === 'pronto' ? 'bg-blue-500/20 text-blue-500' : 
+                          'bg-yellow-500/20 text-yellow-500'
+                        }`}>
+                        {order.status.replace('_', ' ')}
+                      </span>
+                    </td>
+                    <td className="py-3 px-2 text-right font-semibold text-green-500">€{order.final_selling_price}</td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         ) : (
