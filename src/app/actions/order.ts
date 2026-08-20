@@ -92,3 +92,11 @@ export async function deleteOrder(id: string) {
   revalidatePath('/orders')
   revalidatePath('/')
 }
+
+export async function updateOrderStatus(id: string, status: string) {
+  const supabase = createClient()
+  const { error } = await supabase.from('orders').update({ status }).eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/orders')
+  revalidatePath('/')
+}

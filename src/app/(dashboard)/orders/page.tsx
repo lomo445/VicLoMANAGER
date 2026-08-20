@@ -3,6 +3,7 @@ import { NewOrderDialog } from "@/components/orders/NewOrderDialog"
 import { AlertTriangle } from "lucide-react"
 import { DeleteButton } from "@/components/ui-custom/DeleteButton"
 import { deleteOrder } from "@/app/actions/order"
+import { StatusSelect } from "@/components/orders/StatusSelect"
 
 export default async function OrdersPage() {
   const supabase = createClient()
@@ -61,15 +62,8 @@ export default async function OrdersPage() {
                         {isDelayed && <span className="flex items-center gap-1 text-[10px] uppercase font-bold bg-destructive text-destructive-foreground px-1.5 py-0.5 rounded-sm"><AlertTriangle className="w-3 h-3"/> Ritardo</span>}
                       </div>
                     </td>
-                    <td className="py-3 px-2 capitalize">
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold
-                        ${order.status === 'consegnato' ? 'bg-green-500/20 text-green-500' : 
-                          order.status === 'da_stampare' ? 'bg-muted text-muted-foreground' : 
-                          order.status === 'pronto' ? 'bg-blue-500/20 text-blue-500' : 
-                          'bg-yellow-500/20 text-yellow-500'
-                        }`}>
-                        {order.status.replace('_', ' ')}
-                      </span>
+                    <td className="py-3 px-2">
+                      <StatusSelect id={order.id} currentStatus={order.status} />
                     </td>
                     <td className="py-3 px-2 text-right font-semibold text-green-500">€{order.final_selling_price}</td>
                     <td className="py-3 px-2 text-right">
