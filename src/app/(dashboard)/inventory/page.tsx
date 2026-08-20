@@ -104,7 +104,7 @@ export default async function InventoryPage() {
                 </div>
                 <div className="mt-2 text-sm flex justify-between text-muted-foreground">
                   <span>Costo: €{e.default_cost}</span>
-                  <span className="text-green-600 font-bold">Prezzo: €{e.default_price}</span>
+                  
                 </div>
               </div>
             ))}

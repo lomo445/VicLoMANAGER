@@ -31,16 +31,13 @@ export function NewExtraDialog() {
             <Label>Nome Accessorio/Lavorazione</Label>
             <Input name="name" required placeholder="es. Tag NFC NTAG215" />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Costo per unità (€)</Label>
-              <Input name="default_cost" type="number" step="0.01" required />
-            </div>
-            <div className="space-y-2">
-              <Label>Prezzo ricaricato (€)</Label>
-              <Input name="default_price" type="number" step="0.01" required />
-            </div>
+          <div className="space-y-2">
+            <Label>Costo per te (Costo di produzione) (€)</Label>
+            <Input name="default_cost" type="number" step="0.01" required />
+            <p className="text-xs text-muted-foreground">Verrà aggiunto ai costi di produzione per calcolare l'utile netto, senza aumentare il prezzo al cliente.</p>
           </div>
+          {/* We pass 0 automatically for price since user doesn't want it */}
+          <input type="hidden" name="default_price" value="0" />
           <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Annulla</Button>
             <Button type="submit">Salva</Button>

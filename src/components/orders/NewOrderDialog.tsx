@@ -26,7 +26,7 @@ export function NewOrderDialog({ products, extrasCatalog }: { products: any[], e
   const materialCost = selectedProduct ? (selectedProduct.base_weight_g / 1000) * 20 : 0 // Assuming 20 eur/kg
   
   const extrasCost = selectedExtras.reduce((acc, curr) => acc + (curr.unit_cost * curr.quantity), 0)
-  const extrasSurcharge = selectedExtras.reduce((acc, curr) => acc + (curr.unit_price * curr.quantity), 0)
+  const extrasSurcharge = 0 // Extra prices do not increase selling price as per user request
   
   const totalProductionCost = calculateTotalProductionCost(electricalCost, materialCost, extrasCost)
   const finalSellingPrice = calculateFinalSellingPrice(selectedProduct?.base_selling_price || 0, extrasSurcharge)

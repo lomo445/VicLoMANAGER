@@ -26,7 +26,7 @@ export async function createOrder(formData: FormData) {
   const materialCost = product ? (product.base_weight_g / 1000) * 20 : 0 
   
   const extrasCost = selectedExtras.reduce((acc: number, curr: any) => acc + (curr.unit_cost * curr.quantity), 0)
-  const extrasSurcharge = selectedExtras.reduce((acc: number, curr: any) => acc + (curr.unit_price * curr.quantity), 0)
+  const extrasSurcharge = 0 // Fixed per user request
   
   const calculated_production_cost = calculateTotalProductionCost(electricalCost, materialCost, extrasCost)
   const final_selling_price = calculateFinalSellingPrice(product?.base_selling_price || 0, extrasSurcharge)
