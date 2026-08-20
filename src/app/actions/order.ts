@@ -56,12 +56,12 @@ export async function createOrder(formData: FormData) {
       const costPerUnit = calculateTotalProductionCost(electricalCost, materialCost, 0)
       
       totalProdCost += costPerUnit * item.quantity
-      totalSellPrice += product.base_selling_price * item.quantity
+      totalSellPrice += item.unit_price * item.quantity
       
       finalItemsToInsert.push({
         product_id: product.id,
         quantity: item.quantity,
-        unit_price: product.base_selling_price,
+        unit_price: item.unit_price,
         unit_cost: costPerUnit
       })
     }

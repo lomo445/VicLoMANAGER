@@ -3,26 +3,27 @@
 import { useState, useMemo } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Plus, Trash2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Plus, Trash2 } from 'lucide-react'
 import { createOrder } from '@/app/actions/order'
-import { calculateFinalSellingPrice, calculateTotalProductionCost } from '@/lib/calculations'
+import { calculateTotalProductionCost } from '@/lib/calculations'
 
 export function NewOrderDialog({ products, extrasCatalog, avgKw, avgKwhCost }: { products: any[], extrasCatalog: any[], avgKw: number, avgKwhCost: number }) {
   const [open, setOpen] = useState(false)
-  
   const [clientName, setClientName] = useState('')
-  
-  // Order Items
-  const [orderItems, setOrderItems] = useState<{id: string, product_id: string, quantity: number}[]>([])
-  
-  // Order Extras
-  const [selectedExtras, setSelectedExtras] = useState<{id: string, name: string, unit_cost: number, unit_price: number, quantity: number}[]>([])
+  const [orderItems, setOrderItems] = useState<any[]>([])
+  const [selectedExtras, setSelectedExtras] = useState<any[]>([])
 
   const addProduct = (productId: string) => {
-    setOrderItems([...orderItems, { id: crypto.randomUUID(), product_id: productId, quantity: 1 }])
+    const product = products.find(p => p.id === productId)
+    setOrderItems([...orderItems, { 
+      id: crypto.randomUUID(), 
+      product_id: productId, 
+      quantity: 1, 
+      unit_price: product ? product.base_selling_price : 0 
+    }])
   }
 
   const removeProduct = (id: string) => {
@@ -32,33 +33,29 @@ export function NewOrderDialog({ products, extrasCatalog, avgKw, avgKwhCost }: {
   const updateProductQuantity = (id: string, qty: number) => {
     setOrderItems(orderItems.map(item => item.id === id ? { ...item, quantity: qty } : item))
   }
+  
+  const updateProductPrice = (id: string, price: number) => {
+    setOrderItems(orderItems.map(item => item.id === id ? { ...item, unit_price: price } : item))
+  }
 
-  const totalProductsQuantity = orderItems.reduce((acc, curr) => acc + curr.quantity, 0)
-
-  const addExtra = (catalogId: string) => {
-    const extra = extrasCatalog.find(e => e.id === catalogId)
+  const addExtra = (extraId: string) => {
+    const extra = extrasCatalog.find(e => e.id === extraId)
     if (extra) {
-      setSelectedExtras([...selectedExtras, { 
-        id: crypto.randomUUID(), 
-        name: extra.name, 
-        unit_cost: extra.default_cost, 
-        unit_price: extra.default_price, 
-        // Default quantity to the total number of products in the order
-        quantity: totalProductsQuantity > 0 ? totalProductsQuantity : 1 
-      }])
+      // Default extra quantity is the total number of products in the order
+      const totalProductsQty = orderItems.reduce((acc, curr) => acc + curr.quantity, 0)
+      setSelectedExtras([...selectedExtras, { ...extra, id: crypto.randomUUID(), quantity: totalProductsQty > 0 ? totalProductsQty : 1 }])
     }
   }
 
   const removeExtra = (id: string) => {
-    setSelectedExtras(selectedExtras.filter(e => e.id !== id))
+    setSelectedExtras(selectedExtras.filter(item => item.id !== id))
   }
 
-  // Calculate Totals
   const { totalProductionCost, finalSellingPrice, margin } = useMemo(() => {
     let totalProdCost = 0
     let totalSellPrice = 0
 
-    // Products cost and price
+    // Products cost
     orderItems.forEach(item => {
       const p = products.find(prod => prod.id === item.product_id)
       if (p) {
@@ -66,7 +63,8 @@ export function NewOrderDialog({ products, extrasCatalog, avgKw, avgKwhCost }: {
         const hours = (p.base_print_time_minutes / 60); const electricalCost = avgKw * hours * avgKwhCost
         const costPerUnit = calculateTotalProductionCost(electricalCost, materialCost, 0)
         totalProdCost += costPerUnit * item.quantity
-        totalSellPrice += p.base_selling_price * item.quantity
+        // Use custom unit price instead of base selling price!
+        totalSellPrice += item.unit_price * item.quantity
       }
     })
 
@@ -159,11 +157,14 @@ export function NewOrderDialog({ products, extrasCatalog, avgKw, avgKwhCost }: {
                 <div key={item.id} className="flex items-center gap-3 bg-card p-3 border border-border rounded-md shadow-sm">
                   <div className="flex-1">
                     <div className="font-medium text-sm">{product?.name}</div>
-                    <div className="text-xs text-muted-foreground">Prezzo cad: €{product?.base_selling_price}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Label className="text-xs">Prezzo(€):</Label>
+                    <Input type="number" step="0.01" value={item.unit_price} onChange={e => updateProductPrice(item.id, parseFloat(e.target.value) || 0)} className="w-24 text-green-600 font-semibold" />
                   </div>
                   <div className="flex items-center gap-2">
                     <Label className="text-xs">Qtà:</Label>
-                    <Input type="number" value={item.quantity} onChange={e => updateProductQuantity(item.id, parseInt(e.target.value) || 1)} className="w-20" min="1" />
+                    <Input type="number" value={item.quantity} onChange={e => updateProductQuantity(item.id, parseInt(e.target.value) || 1)} className="w-16" min="1" />
                   </div>
                   <Button type="button" variant="ghost" size="icon" onClick={() => removeProduct(item.id)}>
                     <Trash2 className="h-4 w-4 text-destructive" />
