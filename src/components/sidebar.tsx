@@ -1,6 +1,9 @@
+'use client'
+
 import Link from "next/link"
 import Image from "next/image"
-import { Home, Package, ShoppingCart, Settings } from "lucide-react"
+import { Home, Package, ShoppingCart, Settings, LogOut } from "lucide-react"
+import { logout } from "@/app/actions/auth"
 
 export function Sidebar() {
   return (
@@ -38,8 +41,14 @@ export function Sidebar() {
           Impostazioni Macchine
         </Link>
       </nav>
-      <div className="p-4 border-t text-xs text-center font-medium text-gray-400 bg-gray-50">
-        &copy; {new Date().getFullYear()} VicloLab Manager
+      <div className="p-4 border-t flex flex-col gap-2">
+        <button onClick={() => logout()} className="flex items-center justify-center gap-2 w-full px-3 py-2 text-sm text-red-600 font-medium rounded-md hover:bg-red-50 transition-colors">
+          <LogOut className="h-4 w-4" />
+          Esci
+        </button>
+        <div className="text-xs text-center font-medium text-gray-400">
+          &copy; {new Date().getFullYear()} VicloLab Manager
+        </div>
       </div>
     </div>
   )
