@@ -4,6 +4,8 @@ import { NewProductDialog } from "@/components/inventory/NewProductDialog"
 import { EditProductDialog } from "@/components/inventory/EditProductDialog"
 import { NewExtraDialog } from "@/components/inventory/NewExtraDialog"
 import { DeleteButton } from "@/components/ui-custom/DeleteButton"
+import { EditMaterialDialog } from "@/components/inventory/EditMaterialDialog"
+import { EditExtraDialog } from "@/components/inventory/EditExtraDialog"
 import { deleteMaterial, deleteProduct, deleteExtra } from "@/app/actions/inventory"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
@@ -56,7 +58,7 @@ export default async function InventoryPage() {
           <div className="flex justify-end mb-4">
             <NewMaterialDialog />
           </div>
-          <div className="bg-card border border-border rounded-md shadow-sm overflow-hidden">
+          <div className="bg-card border border-border rounded-md shadow-sm overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="bg-muted text-muted-foreground border-b border-border">
                 <tr>
@@ -73,7 +75,7 @@ export default async function InventoryPage() {
                     <td className="p-3 text-foreground">{m.material_type}</td>
                     <td className="p-3 text-foreground font-bold">€{m.cost_per_kg}</td>
                     <td className="p-3 text-right">
-                      <DeleteButton id={m.id} actionFn={deleteMaterial} />
+                      <div className="flex justify-end gap-1"><EditMaterialDialog material={m} /><DeleteButton id={m.id} actionFn={deleteMaterial} /></div>
                     </td>
                   </tr>
                 ))}
@@ -91,7 +93,7 @@ export default async function InventoryPage() {
               <div key={e.id} className="bg-card border border-border p-4 rounded-md shadow-sm">
                 <div className="flex justify-between items-center">
                   <h4 className="font-bold text-foreground">{e.name}</h4>
-                  <DeleteButton id={e.id} actionFn={deleteExtra} />
+                  <div className="flex justify-end gap-1"><EditExtraDialog extra={e} /><DeleteButton id={e.id} actionFn={deleteExtra} /></div>
                 </div>
                 <div className="mt-2 text-sm flex justify-between text-muted-foreground">
                   <span>Costo: €{e.default_cost}</span>

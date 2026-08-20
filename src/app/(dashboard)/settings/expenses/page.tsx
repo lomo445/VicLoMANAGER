@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { NewExpenseDialog } from "@/components/settings/NewExpenseDialog"
 import { DeleteButton } from "@/components/ui-custom/DeleteButton"
+import { EditExpenseDialog } from "@/components/settings/EditExpenseDialog"
 import { deleteExpense } from "@/app/actions/settings"
 
 export default async function ExpensesPage() {
@@ -14,7 +15,7 @@ export default async function ExpensesPage() {
         <NewExpenseDialog />
       </div>
       
-      <div className="bg-card rounded-md border shadow-sm p-4">
+      <div className="bg-card rounded-md border shadow-sm p-4 overflow-x-auto">
         {expenses && expenses.length > 0 ? (
           <table className="w-full text-left text-sm">
             <thead>
@@ -38,7 +39,7 @@ export default async function ExpensesPage() {
                   <td className="py-3">{e.title}</td>
                   <td className="py-3 text-right font-bold text-red-500">-€{e.amount}</td>
                   <td className="py-3 text-right">
-                    <DeleteButton id={e.id} actionFn={deleteExpense} />
+                    <div className="flex justify-end gap-1"><EditExpenseDialog expense={e} /><DeleteButton id={e.id} actionFn={deleteExpense} /></div>
                   </td>
                 </tr>
               ))}

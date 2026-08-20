@@ -80,6 +80,21 @@ export async function createExpense(formData: FormData) {
   revalidatePath('/')
 }
 
+export async function updateExpense(id: string, formData: FormData) {
+  const supabase = createClient()
+  const rawData = {
+    title: formData.get("title") as string,
+    category: formData.get("category") as string,
+    amount: Number(formData.get("amount") || 0),
+    expense_date: formData.get("expense_date") as string,
+    notes: formData.get("notes") as string || "",
+  }
+  const { error } = await supabase.from("expenses").update(rawData).eq("id", id)
+  if (error) throw new Error(error.message)
+  revalidatePath("/settings/expenses")
+  revalidatePath("/")
+}
+
 export async function deleteExpense(id: string) {
   const supabase = createClient()
   const { error } = await supabase.from('expenses').delete().eq('id', id)

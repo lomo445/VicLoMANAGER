@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server"
 import { NewLocationDialog } from "@/components/settings/NewLocationDialog"
 import { NewPrinterDialog } from "@/components/settings/NewPrinterDialog"
 import { DeleteButton } from "@/components/ui-custom/DeleteButton"
+import { EditLocationDialog } from "@/components/settings/EditLocationDialog"
+import { EditPrinterDialog } from "@/components/settings/EditPrinterDialog"
 import { deleteLocation, deletePrinter } from "@/app/actions/settings"
 
 export default async function SettingsPage() {
@@ -25,7 +27,7 @@ export default async function SettingsPage() {
               <h3 className="font-bold text-lg text-card-foreground">{loc.name}</h3>
               <span className="text-sm text-muted-foreground font-medium">Costo Elettricità: €{loc.electricity_cost_kwh} / kWh</span>
             </div>
-            <DeleteButton id={loc.id} actionFn={deleteLocation} />
+            <div className="flex justify-end gap-1"><EditLocationDialog location={loc} /><DeleteButton id={loc.id} actionFn={deleteLocation} /></div>
           </div>
           
           <h4 className="text-sm font-semibold mb-2 text-foreground">Macchine collegate:</h4>
@@ -39,7 +41,7 @@ export default async function SettingsPage() {
                     <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${p.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                       {p.status}
                     </span>
-                    <DeleteButton id={p.id} actionFn={deletePrinter} />
+                    <div className="flex justify-end gap-1"><EditPrinterDialog printer={p} locations={locations} /><DeleteButton id={p.id} actionFn={deletePrinter} /></div>
                   </div>
                 </div>
               ))}

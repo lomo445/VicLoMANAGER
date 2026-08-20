@@ -19,6 +19,18 @@ export async function createMaterial(formData: FormData) {
   revalidatePath('/inventory')
 }
 
+export async function updateMaterial(id: string, formData: FormData) {
+  const supabase = createClient()
+  const rawData = {
+    brand: formData.get("brand") as string,
+    material_type: formData.get("material_type") as string,
+    cost_per_kg: Number(formData.get("cost_per_kg") || 0),
+  }
+  const { error } = await supabase.from("materials").update(rawData).eq("id", id)
+  if (error) throw new Error(error.message)
+  revalidatePath("/inventory")
+}
+
 export async function deleteMaterial(id: string) {
   const supabase = createClient()
   const { error } = await supabase.from('materials').delete().eq('id', id)
@@ -73,6 +85,18 @@ export async function createExtra(formData: FormData) {
   const { error } = await supabase.from('extras_catalog').insert([rawData])
   if (error) throw new Error(error.message)
   revalidatePath('/inventory')
+}
+
+export async function updateExtra(id: string, formData: FormData) {
+  const supabase = createClient()
+  const rawData = {
+    name: formData.get("name") as string,
+    default_cost: Number(formData.get("default_cost") || 0),
+    default_price: Number(formData.get("default_price") || 0),
+  }
+  const { error } = await supabase.from("extras_catalog").update(rawData).eq("id", id)
+  if (error) throw new Error(error.message)
+  revalidatePath("/inventory")
 }
 
 export async function deleteExtra(id: string) {
