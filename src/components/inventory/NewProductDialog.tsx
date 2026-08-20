@@ -41,7 +41,7 @@ export function NewProductDialog({ materials = [] }: { materials?: any[] }) {
               </SelectTrigger>
               <SelectContent className="bg-popover">
                 {materials.map(m => (
-                  <SelectItem key={m.id} value={m.id}>{m.brand} {m.color_name}</SelectItem>
+                  <SelectItem key={m.id} value={m.id}>{m.brand} {m.material_type}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

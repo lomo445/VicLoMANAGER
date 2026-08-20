@@ -11,9 +11,8 @@ export default async function InventoryPage() {
   const supabase = createClient()
   
   const { data: materials } = await supabase.from('materials').select('*')
-  const { data: products } = await supabase.from('products').select('*, materials(color_name, brand), printers(model_name)')
+  const { data: products } = await supabase.from('products').select('*, materials(brand, material_type)')
   const { data: extras } = await supabase.from('extras_catalog').select('*')
-  const { data: printers } = await supabase.from('printers').select('*')
 
   return (
     <div className="space-y-6">
@@ -24,7 +23,7 @@ export default async function InventoryPage() {
       <Tabs defaultValue="products" className="w-full">
         <TabsList className="w-full bg-muted border border-border">
           <TabsTrigger value="products" className="flex-1">Catalogo Prodotti</TabsTrigger>
-          <TabsTrigger value="materials" className="flex-1">Materiali (Bobine)</TabsTrigger>
+          <TabsTrigger value="materials" className="flex-1">Tipi Materiale</TabsTrigger>
           <TabsTrigger value="extras" className="flex-1">Lavorazioni Extra</TabsTrigger>
         </TabsList>
 
@@ -46,7 +45,7 @@ export default async function InventoryPage() {
                   <span>Peso Base: <strong className="text-foreground">{p.base_weight_g} g</strong></span>
                   <span>Tempo Stampa: <strong className="text-foreground">{p.base_print_time_minutes} min</strong></span>
                   <span>Prezzo Pubblico: <strong className="text-green-600 font-bold">€{p.base_selling_price}</strong></span>
-                  {p.materials && <span className="text-xs mt-1 bg-muted p-1 rounded inline-block border border-border">Mat: {p.materials.brand} {p.materials.color_name}</span>}
+                  {p.materials && <span className="text-xs mt-1 bg-muted p-1 rounded inline-block border border-border">Mat: {p.materials.brand} {p.materials.material_type}</span>}
                 </div>
               </div>
             ))}
@@ -61,28 +60,18 @@ export default async function InventoryPage() {
             <table className="w-full text-left text-sm">
               <thead className="bg-muted text-muted-foreground border-b border-border">
                 <tr>
-                  <th className="p-3">Materiale</th>
-                  <th className="p-3">Marca / Colore</th>
+                  <th className="p-3">Marca</th>
+                  <th className="p-3">Tipo Materiale</th>
                   <th className="p-3">Costo/Kg</th>
-                  <th className="p-3">Giacenza</th>
                   <th className="p-3 text-right">Azioni</th>
                 </tr>
               </thead>
               <tbody>
                 {materials?.map(m => (
                   <tr key={m.id} className="border-b border-border last:border-0">
-                    <td className="p-3 font-medium text-foreground">{m.material_type}</td>
-                    <td className="p-3 text-foreground flex items-center gap-2">
-                      <div className="w-4 h-4 rounded-full border border-border" style={{ backgroundColor: m.hex_code }}></div>
-                      {m.brand} - {m.color_name}
-                    </td>
-                    <td className="p-3 text-foreground">€{m.cost_per_kg}</td>
-                    <td className="p-3 text-foreground">
-                      <div className="w-full bg-muted rounded-full h-2.5 max-w-[100px] mt-1 border border-border">
-                        <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${Math.min(100, (m.current_stock_g / m.spool_weight_g) * 100)}%` }}></div>
-                      </div>
-                      <span className="text-xs text-muted-foreground">{m.current_stock_g}g / {m.spool_weight_g}g</span>
-                    </td>
+                    <td className="p-3 font-medium text-foreground">{m.brand}</td>
+                    <td className="p-3 text-foreground">{m.material_type}</td>
+                    <td className="p-3 text-foreground font-bold">€{m.cost_per_kg}</td>
                     <td className="p-3 text-right">
                       <DeleteButton id={m.id} actionFn={deleteMaterial} />
                     </td>

@@ -8,11 +8,11 @@ export async function createMaterial(formData: FormData) {
   const rawData = {
     brand: formData.get('brand') as string,
     material_type: formData.get('material_type') as string,
-    color_name: formData.get('color_name') as string,
-    hex_code: formData.get('hex_code') as string,
-    spool_weight_g: Number(formData.get('spool_weight_g') || 1000),
+    
+    
+    
     cost_per_kg: Number(formData.get('cost_per_kg') || 0),
-    current_stock_g: Number(formData.get('current_stock_g') || 1000),
+    
   }
   const { error } = await supabase.from('materials').insert([rawData])
   if (error) throw new Error(error.message)
