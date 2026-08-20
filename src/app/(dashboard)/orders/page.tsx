@@ -8,8 +8,26 @@ import { StatusSelect } from "@/components/orders/StatusSelect"
 export default async function OrdersPage() {
   const supabase = createClient()
   const { data: orders } = await supabase.from('orders').select('*, order_items(*, products(name))').order('created_at', { ascending: false })
-  const { data: products } = await supabase.from('products').select('*, materials(*), printers(*, locations(*))')
+  const { data: products } = await supabase.from('products').select('*, materials(*)')
   const { data: extrasCatalog } = await supabase.from('extras_catalog').select('*')
+  
+  const { data: printers } = await supabase.from('printers').select('*, locations(*)')
+  
+  // Calcolo medie
+  let avgKw = 0.2
+  let avgKwhCost = 0.35
+  
+  if (printers && printers.length > 0) {
+    const totalWatts = printers.reduce((acc, p) => acc + (p.power_consumption_w || 0), 0)
+    avgKw = (totalWatts / printers.length) / 1000
+    
+    // Solo le locations connesse a stampanti attive
+    const locations = printers.map(p => p.locations).filter(l => l !== null)
+    if (locations.length > 0) {
+      const totalKwhCost = locations.reduce((acc, l) => acc + (l.electricity_cost_kwh || 0), 0)
+      avgKwhCost = totalKwhCost / locations.length
+    }
+  }
 
   const today = new Date()
   today.setHours(0,0,0,0)
@@ -18,7 +36,12 @@ export default async function OrdersPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Ordini</h1>
-        <NewOrderDialog products={products || []} extrasCatalog={extrasCatalog || []} />
+        <NewOrderDialog 
+          products={products || []} 
+          extrasCatalog={extrasCatalog || []} 
+          avgKw={avgKw} 
+          avgKwhCost={avgKwhCost} 
+        />
       </div>
       
       <div className="bg-card rounded-md border shadow-sm p-4 overflow-x-auto">

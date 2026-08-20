@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus } from 'lucide-react'
 import { createProduct } from '@/app/actions/inventory'
 
-export function NewProductDialog({ materials = [], printers = [] }: { materials?: any[], printers?: any[] }) {
+export function NewProductDialog({ materials = [] }: { materials?: any[] }) {
   const [open, setOpen] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -33,34 +33,21 @@ export function NewProductDialog({ materials = [], printers = [] }: { materials?
             <Input name="name" required placeholder="es. Vaso Geometrico" />
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Materiale</Label>
-              <Select name="material_id" required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleziona..." />
-                </SelectTrigger>
-                <SelectContent className="bg-popover">
-                  {materials.map(m => (
-                    <SelectItem key={m.id} value={m.id}>{m.brand} {m.color_name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Stampante Base</Label>
-              <Select name="printer_id" required>
-                <SelectTrigger>
-                  <SelectValue placeholder="Seleziona..." />
-                </SelectTrigger>
-                <SelectContent className="bg-popover">
-                  {printers.map(p => (
-                    <SelectItem key={p.id} value={p.id}>{p.model_name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <Label>Materiale Base</Label>
+            <Select name="material_id" required>
+              <SelectTrigger>
+                <SelectValue placeholder="Seleziona..." />
+              </SelectTrigger>
+              <SelectContent className="bg-popover">
+                {materials.map(m => (
+                  <SelectItem key={m.id} value={m.id}>{m.brand} {m.color_name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-[10px] text-muted-foreground mt-1">
+              Nota: Il costo dell'energia verrà calcolato facendo una stima media tra tutte le tue stampanti attive per semplificare la gestione.
+            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -80,6 +67,7 @@ export function NewProductDialog({ materials = [], printers = [] }: { materials?
           </div>
           
           <input type="hidden" name="type" value="standard" />
+          {/* Printer ID not submitted anymore, backend can ignore it or leave it null */}
           
           <div className="flex justify-end gap-2 pt-4">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>Annulla</Button>

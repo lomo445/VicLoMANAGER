@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { createOrder } from '@/app/actions/order'
 import { calculateFinalSellingPrice, calculateTotalProductionCost } from '@/lib/calculations'
 
-export function NewOrderDialog({ products, extrasCatalog }: { products: any[], extrasCatalog: any[] }) {
+export function NewOrderDialog({ products, extrasCatalog, avgKw, avgKwhCost }: { products: any[], extrasCatalog: any[], avgKw: number, avgKwhCost: number }) {
   const [open, setOpen] = useState(false)
   
   const [clientName, setClientName] = useState('')
@@ -63,7 +63,7 @@ export function NewOrderDialog({ products, extrasCatalog }: { products: any[], e
       const p = products.find(prod => prod.id === item.product_id)
       if (p) {
         const materialCost = p.materials ? (p.base_weight_g / 1000) * p.materials.cost_per_kg : (p.base_weight_g / 1000) * 20
-        const kw = p.printers ? (p.printers.power_consumption_w / 1000) : 0.2; const hours = (p.base_print_time_minutes / 60); const kwhCost = (p.printers && p.printers.locations) ? p.printers.locations.electricity_cost_kwh : 0.35; const electricalCost = kw * hours * kwhCost
+        const hours = (p.base_print_time_minutes / 60); const electricalCost = avgKw * hours * avgKwhCost
         const costPerUnit = calculateTotalProductionCost(electricalCost, materialCost, 0)
         totalProdCost += costPerUnit * item.quantity
         totalSellPrice += p.base_selling_price * item.quantity
@@ -79,7 +79,7 @@ export function NewOrderDialog({ products, extrasCatalog }: { products: any[], e
       finalSellingPrice: totalSellPrice,
       margin: totalSellPrice - totalProdCost
     }
-  }, [orderItems, selectedExtras, products])
+  }, [orderItems, selectedExtras, products, avgKw, avgKwhCost])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

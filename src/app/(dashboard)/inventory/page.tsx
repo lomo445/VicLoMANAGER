@@ -29,7 +29,7 @@ export default async function InventoryPage() {
 
         <TabsContent value="products" className="mt-6">
           <div className="flex justify-end mb-4">
-            <NewProductDialog materials={materials || []} printers={printers || []} />
+            <NewProductDialog materials={materials || []} />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {products?.map(p => (
@@ -46,7 +46,6 @@ export default async function InventoryPage() {
                   <span>Tempo Stampa: <strong className="text-foreground">{p.base_print_time_minutes} min</strong></span>
                   <span>Prezzo Pubblico: <strong className="text-green-600 font-bold">€{p.base_selling_price}</strong></span>
                   {p.materials && <span className="text-xs mt-1 bg-muted p-1 rounded inline-block border border-border">Mat: {p.materials.brand} {p.materials.color_name}</span>}
-                  {p.printers && <span className="text-xs mt-1 bg-muted p-1 rounded inline-block border border-border">Stampante: {p.printers.model_name}</span>}
                 </div>
               </div>
             ))}

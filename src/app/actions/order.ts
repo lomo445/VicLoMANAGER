@@ -24,19 +24,35 @@ export async function createOrder(formData: FormData) {
   const extrasString = formData.get('extras') as string
   const selectedExtras = extrasString ? JSON.parse(extrasString) : []
 
-  // Calculate totals
+  // Fetch products, materials, and printers for calculation
+  const { data: allProducts } = await supabase.from('products').select('*, materials(*)')
+  const { data: printers } = await supabase.from('printers').select('*, locations(*)')
+
+  let avgKw = 0.2
+  let avgKwhCost = 0.35
+  
+  if (printers && printers.length > 0) {
+    const totalWatts = printers.reduce((acc, p) => acc + (p.power_consumption_w || 0), 0)
+    avgKw = (totalWatts / printers.length) / 1000
+    
+    const locations = printers.map(p => p.locations).filter(l => l !== null)
+    if (locations.length > 0) {
+      const totalKwhCost = locations.reduce((acc, l) => acc + (l.electricity_cost_kwh || 0), 0)
+      avgKwhCost = totalKwhCost / locations.length
+    }
+  }
+
   let totalProdCost = 0
   let totalSellPrice = 0
-
-  const { data: allProducts } = await supabase.from('products').select('*, materials(*), printers(*, locations(*))')
-  
   const finalItemsToInsert = []
 
   for (const item of orderItems) {
     const product = allProducts?.find(p => p.id === item.product_id)
     if (product) {
-      const materialCost = product.materials ? (product.base_weight_g / 1000) * product.materials.cost_per_kg : (product.base_weight_g / 1000) * 20 
-      const kw = product.printers ? (product.printers.power_consumption_w / 1000) : 0.2; const hours = (product.base_print_time_minutes / 60); const kwhCost = (product.printers && product.printers.locations) ? product.printers.locations.electricity_cost_kwh : 0.35; const electricalCost = kw * hours * kwhCost 
+      const materialCost = product.materials ? (product.base_weight_g / 1000) * product.materials.cost_per_kg : (product.base_weight_g / 1000) * 20
+      const hours = (product.base_print_time_minutes / 60)
+      const electricalCost = avgKw * hours * avgKwhCost
+      
       const costPerUnit = calculateTotalProductionCost(electricalCost, materialCost, 0)
       
       totalProdCost += costPerUnit * item.quantity
