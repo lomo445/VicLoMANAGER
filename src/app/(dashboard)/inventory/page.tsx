@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { NewMaterialDialog } from "@/components/inventory/NewMaterialDialog"
 import { NewProductDialog } from "@/components/inventory/NewProductDialog"
+import { EditProductDialog } from "@/components/inventory/EditProductDialog"
 import { NewExtraDialog } from "@/components/inventory/NewExtraDialog"
 import { DeleteButton } from "@/components/ui-custom/DeleteButton"
 import { deleteMaterial, deleteProduct, deleteExtra } from "@/app/actions/inventory"
@@ -38,7 +39,7 @@ export default async function InventoryPage() {
                   <h3 className="font-bold text-lg text-card-foreground">{p.name}</h3>
                   <div className="flex gap-1">
                     <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">{p.type}</span>
-                    <DeleteButton id={p.id} actionFn={deleteProduct} />
+                    <EditProductDialog product={p} materials={materials || []} /><DeleteButton id={p.id} actionFn={deleteProduct} />
                   </div>
                 </div>
                 <div className="text-sm text-muted-foreground flex flex-col gap-1 mt-2">

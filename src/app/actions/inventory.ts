@@ -42,6 +42,20 @@ export async function createProduct(formData: FormData) {
   revalidatePath('/inventory')
 }
 
+export async function updateProduct(id: string, formData: FormData) {
+  const supabase = createClient()
+  const rawData = {
+    name: formData.get('name') as string,
+    base_weight_g: Number(formData.get('base_weight_g') || 0),
+    base_print_time_minutes: Number(formData.get('base_print_time_minutes') || 0),
+    base_selling_price: Number(formData.get('base_selling_price') || 0),
+    material_id: formData.get('material_id') as string || null,
+  }
+  const { error } = await supabase.from('products').update(rawData).eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/inventory')
+}
+
 export async function deleteProduct(id: string) {
   const supabase = createClient()
   const { error } = await supabase.from('products').delete().eq('id', id)
