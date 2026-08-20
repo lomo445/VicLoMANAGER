@@ -8,7 +8,7 @@ import { StatusSelect } from "@/components/orders/StatusSelect"
 export default async function OrdersPage() {
   const supabase = createClient()
   const { data: orders } = await supabase.from('orders').select('*, order_items(*, products(name))').order('created_at', { ascending: false })
-  const { data: products } = await supabase.from('products').select('*')
+  const { data: products } = await supabase.from('products').select('*, materials(*), printers(*, locations(*))')
   const { data: extrasCatalog } = await supabase.from('extras_catalog').select('*')
 
   const today = new Date()

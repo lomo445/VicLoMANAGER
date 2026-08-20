@@ -28,15 +28,15 @@ export async function createOrder(formData: FormData) {
   let totalProdCost = 0
   let totalSellPrice = 0
 
-  const { data: allProducts } = await supabase.from('products').select('*')
+  const { data: allProducts } = await supabase.from('products').select('*, materials(*), printers(*, locations(*))')
   
   const finalItemsToInsert = []
 
   for (const item of orderItems) {
     const product = allProducts?.find(p => p.id === item.product_id)
     if (product) {
-      const materialCost = (product.base_weight_g / 1000) * 20 
-      const electricalCost = 0.50 
+      const materialCost = product.materials ? (product.base_weight_g / 1000) * product.materials.cost_per_kg : (product.base_weight_g / 1000) * 20 
+      const kw = product.printers ? (product.printers.power_consumption_w / 1000) : 0.2; const hours = (product.base_print_time_minutes / 60); const kwhCost = (product.printers && product.printers.locations) ? product.printers.locations.electricity_cost_kwh : 0.35; const electricalCost = kw * hours * kwhCost 
       const costPerUnit = calculateTotalProductionCost(electricalCost, materialCost, 0)
       
       totalProdCost += costPerUnit * item.quantity

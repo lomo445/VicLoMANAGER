@@ -62,8 +62,8 @@ export function NewOrderDialog({ products, extrasCatalog }: { products: any[], e
     orderItems.forEach(item => {
       const p = products.find(prod => prod.id === item.product_id)
       if (p) {
-        const materialCost = (p.base_weight_g / 1000) * 20 // 20 eur/kg mock
-        const electricalCost = 0.50 // mock
+        const materialCost = p.materials ? (p.base_weight_g / 1000) * p.materials.cost_per_kg : (p.base_weight_g / 1000) * 20
+        const kw = p.printers ? (p.printers.power_consumption_w / 1000) : 0.2; const hours = (p.base_print_time_minutes / 60); const kwhCost = (p.printers && p.printers.locations) ? p.printers.locations.electricity_cost_kwh : 0.35; const electricalCost = kw * hours * kwhCost
         const costPerUnit = calculateTotalProductionCost(electricalCost, materialCost, 0)
         totalProdCost += costPerUnit * item.quantity
         totalSellPrice += p.base_selling_price * item.quantity
