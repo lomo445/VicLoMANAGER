@@ -12,20 +12,18 @@ export async function createOrder(formData: FormData) {
     client_contact: formData.get('client_contact') as string,
     product_id: formData.get('product_id') as string,
     custom_notes: formData.get('custom_notes') as string,
+    commission_date: formData.get('commission_date') as string,
     expected_delivery_date: formData.get('expected_delivery_date') as string || null,
     status: formData.get('status') as string || 'da_stampare',
   }
 
-  // Parse extras from the frontend
   const extrasString = formData.get('extras') as string
   const selectedExtras = extrasString ? JSON.parse(extrasString) : []
 
-  // Fetch product for calculations
   const { data: product } = await supabase.from('products').select('*').eq('id', rawData.product_id).single()
   
-  // Calculate costs
-  const electricalCost = 0.50 // TODO: fetch from printer/location
-  const materialCost = product ? (product.base_weight_g / 1000) * 20 : 0 // TODO: fetch exact material cost
+  const electricalCost = 0.50 
+  const materialCost = product ? (product.base_weight_g / 1000) * 20 : 0 
   
   const extrasCost = selectedExtras.reduce((acc: number, curr: any) => acc + (curr.unit_cost * curr.quantity), 0)
   const extrasSurcharge = selectedExtras.reduce((acc: number, curr: any) => acc + (curr.unit_price * curr.quantity), 0)
@@ -33,7 +31,6 @@ export async function createOrder(formData: FormData) {
   const calculated_production_cost = calculateTotalProductionCost(electricalCost, materialCost, extrasCost)
   const final_selling_price = calculateFinalSellingPrice(product?.base_selling_price || 0, extrasSurcharge)
   
-  // 1. Insert Order
   const { data: order, error: orderError } = await supabase.from('orders').insert([{
     ...rawData,
     final_selling_price,
@@ -42,7 +39,6 @@ export async function createOrder(formData: FormData) {
   
   if (orderError) throw new Error('Failed to create order: ' + orderError.message)
   
-  // 2. Insert Order Extras
   if (selectedExtras.length > 0 && order) {
     const extrasToInsert = selectedExtras.map((ex: any) => ({
       order_id: order.id,
@@ -56,5 +52,5 @@ export async function createOrder(formData: FormData) {
   }
   
   revalidatePath('/orders')
-  revalidatePath('/') // update dashboard
+  revalidatePath('/') 
 }

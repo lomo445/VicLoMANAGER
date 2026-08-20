@@ -33,7 +33,7 @@ export default function RegisterPage() {
   return (
     <Card className="shadow-lg border-0">
       <CardHeader className="space-y-4 items-center">
-        <div className="relative w-20 h-20 rounded-full overflow-hidden border border-gray-100 shadow-sm">
+        <div className="relative w-20 h-20 rounded-full overflow-hidden border border-border shadow-sm">
           <Image src="/logo.jpg" alt="VicloLab Logo" fill className="object-cover" />
         </div>
         <div className="text-center">
@@ -74,7 +74,7 @@ export default function RegisterPage() {
               {loading ? 'Registrazione...' : 'Registrati'}
             </Button>
             
-            <div className="text-center text-sm text-gray-500 mt-4">
+            <div className="text-center text-sm text-muted-foreground mt-4">
               Hai già un account? <Link href="/auth/login" className="text-blue-600 hover:underline">Accedi</Link>
             </div>
           </form>

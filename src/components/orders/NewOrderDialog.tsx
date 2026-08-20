@@ -52,7 +52,6 @@ export function NewOrderDialog({ products, extrasCatalog }: { products: any[], e
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    // Add selected extras to form data as JSON
     formData.append('extras', JSON.stringify(selectedExtras))
     
     await createOrder(formData)
@@ -95,13 +94,18 @@ export function NewOrderDialog({ products, extrasCatalog }: { products: any[], e
             </Select>
           </div>
           
-          <div className="space-y-2">
-            <Label htmlFor="expected_delivery_date">Data di Consegna Prevista</Label>
-            <Input id="expected_delivery_date" name="expected_delivery_date" type="date" />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="commission_date">Data di Inserimento</Label>
+              <Input id="commission_date" name="commission_date" type="date" defaultValue={new Date().toISOString().split('T')[0]} required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="expected_delivery_date">Data di Consegna Prevista</Label>
+              <Input id="expected_delivery_date" name="expected_delivery_date" type="date" />
+            </div>
           </div>
 
-          {/* Extras Repeater */}
-          <div className="border p-4 rounded-md space-y-4 bg-gray-50">
+          <div className="border border-border p-4 rounded-md space-y-4 bg-muted/50">
             <div className="flex justify-between items-center">
               <Label>Extra / Lavorazioni (Opzionale)</Label>
               <Select onValueChange={addExtra}>
@@ -117,7 +121,7 @@ export function NewOrderDialog({ products, extrasCatalog }: { products: any[], e
             </div>
             
             {selectedExtras.map((extra, index) => (
-              <div key={extra.id} className="flex items-center gap-2 bg-white p-2 border rounded">
+              <div key={extra.id} className="flex items-center gap-2 bg-background p-2 border border-border rounded">
                 <Input value={extra.name} readOnly className="flex-1" />
                 <Input type="number" value={extra.quantity} onChange={e => {
                   const newExtras = [...selectedExtras]
@@ -125,24 +129,23 @@ export function NewOrderDialog({ products, extrasCatalog }: { products: any[], e
                   setSelectedExtras(newExtras)
                 }} className="w-20" min="1" />
                 <Button type="button" variant="ghost" size="icon" onClick={() => removeExtra(extra.id)}>
-                  <Trash2 className="h-4 w-4 text-red-500" />
+                  <Trash2 className="h-4 w-4 text-destructive" />
                 </Button>
               </div>
             ))}
           </div>
           
-          {/* Live Calculation Preview */}
-          <div className="bg-blue-50 p-4 rounded-md space-y-2 text-sm">
-            <h4 className="font-semibold text-blue-900 mb-2">Preventivo Live</h4>
-            <div className="flex justify-between">
+          <div className="bg-primary/10 p-4 rounded-md space-y-2 text-sm border border-primary/20">
+            <h4 className="font-semibold text-primary mb-2">Preventivo Live</h4>
+            <div className="flex justify-between text-muted-foreground">
               <span>Costo Produzione (Stima):</span>
               <span>€{totalProductionCost.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between font-bold text-lg">
+            <div className="flex justify-between font-bold text-lg text-foreground">
               <span>Prezzo di Vendita Finale:</span>
               <span>€{finalSellingPrice.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-green-700">
+            <div className="flex justify-between text-green-500 font-medium">
               <span>Margine Netto Previsto:</span>
               <span>€{margin.toFixed(2)}</span>
             </div>

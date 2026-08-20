@@ -5,7 +5,6 @@ import { Package, TrendingUp, AlertCircle, Euro } from "lucide-react"
 export default async function DashboardPage() {
   const supabase = createClient()
   
-  // Example fetching (we will need real data later, for now just base queries)
   const { data: orders } = await supabase.from('orders').select('*')
   const { data: expenses } = await supabase.from('expenses').select('amount')
   
@@ -19,49 +18,49 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Dashboard</h1>
+      <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
+        <Card className="bg-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Ordini Attivi</CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{activeOrders.length}</div>
+            <div className="text-2xl font-bold text-card-foreground">{activeOrders.length}</div>
             <p className="text-xs text-muted-foreground">in lavorazione o pronti</p>
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="bg-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Fatturato Totale</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">€{totalRevenue.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-card-foreground">€{totalRevenue.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">da tutti gli ordini</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Spese Totali (Operative)</CardTitle>
             <AlertCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">€{totalExpenses.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-card-foreground">€{totalExpenses.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">materiale escluso (incluso nei costi prod.)</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Utile Netto Reale</CardTitle>
             <Euro className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">€{netProfit.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-card-foreground">€{netProfit.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">Fatturato - Spese - Costi Prod.</p>
           </CardContent>
         </Card>

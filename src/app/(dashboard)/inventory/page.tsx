@@ -20,7 +20,7 @@ export default async function InventoryPage() {
           <TabsTrigger value="products">Prodotti Standard</TabsTrigger>
           <TabsTrigger value="extras">Catalogo Extra</TabsTrigger>
         </TabsList>
-        <TabsContent value="materials" className="bg-white p-6 rounded-md border shadow-sm mt-4">
+        <TabsContent value="materials" className="bg-card p-6 rounded-md border shadow-sm mt-4">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Bobine (Filamento)</h2>
             <NewMaterialDialog />
@@ -36,7 +36,7 @@ export default async function InventoryPage() {
           ))}
           {materials?.length === 0 && <p className="text-muted-foreground text-sm">Nessuna bobina presente.</p>}
         </TabsContent>
-        <TabsContent value="products" className="bg-white p-6 rounded-md border shadow-sm mt-4">
+        <TabsContent value="products" className="bg-card p-6 rounded-md border shadow-sm mt-4">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Prodotti Base</h2>
             <NewProductDialog />
@@ -49,7 +49,7 @@ export default async function InventoryPage() {
           ))}
           {products?.length === 0 && <p className="text-muted-foreground text-sm">Nessun prodotto base inserito.</p>}
         </TabsContent>
-        <TabsContent value="extras" className="bg-white p-6 rounded-md border shadow-sm mt-4">
+        <TabsContent value="extras" className="bg-card p-6 rounded-md border shadow-sm mt-4">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Catalogo Accessori Extra</h2>
             <NewExtraDialog />
@@ -57,7 +57,7 @@ export default async function InventoryPage() {
           {extras?.map((e: any) => (
              <div key={e.id} className="flex justify-between py-2 border-b last:border-0">
                <span>{e.name}</span>
-               <span className="text-sm text-gray-500">Costo: €{e.default_cost} / Prezzo al cliente: €{e.default_price}</span>
+               <span className="text-sm text-muted-foreground">Costo: €{e.default_cost} / Prezzo al cliente: €{e.default_price}</span>
              </div>
           ))}
           {extras?.length === 0 && <p className="text-muted-foreground text-sm">Nessun extra nel catalogo.</p>}

@@ -14,7 +14,7 @@ export default async function OrdersPage() {
         <NewOrderDialog products={products || []} extrasCatalog={extrasCatalog || []} />
       </div>
       
-      <div className="bg-white rounded-md border shadow-sm p-4">
+      <div className="bg-card rounded-md border shadow-sm p-4">
         {orders && orders.length > 0 ? (
           <table className="w-full text-left text-sm">
             <thead>

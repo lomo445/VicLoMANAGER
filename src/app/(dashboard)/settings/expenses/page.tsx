@@ -12,7 +12,7 @@ export default async function ExpensesPage() {
         <NewExpenseDialog />
       </div>
       
-      <div className="bg-white rounded-md border shadow-sm p-4">
+      <div className="bg-card rounded-md border shadow-sm p-4">
         {expenses && expenses.length > 0 ? (
           <table className="w-full text-left text-sm">
             <thead>
@@ -26,7 +26,7 @@ export default async function ExpensesPage() {
             <tbody>
               {expenses.map((e: any) => (
                 <tr key={e.id} className="border-b last:border-0">
-                  <td className="py-3 text-gray-500">{new Date(e.expense_date).toLocaleDateString('it-IT')}</td>
+                  <td className="py-3 text-muted-foreground">{new Date(e.expense_date).toLocaleDateString('it-IT')}</td>
                   <td className="py-3 capitalize">
                     <span className="bg-gray-100 px-2 py-1 rounded text-xs font-medium">
                       {e.category.replace('_', ' ')}

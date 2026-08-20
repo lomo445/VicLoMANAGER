@@ -22,7 +22,7 @@ export default function SettingsLayout({
             </Link>
           </nav>
         </div>
-        <div className="flex-1 bg-white p-6 rounded-md border shadow-sm">
+        <div className="flex-1 bg-card p-6 rounded-md border shadow-sm">
           {children}
         </div>
       </div>

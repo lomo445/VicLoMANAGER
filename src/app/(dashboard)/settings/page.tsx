@@ -17,17 +17,17 @@ export default async function SettingsPage() {
       </div>
       
       {locations?.map((loc: any) => (
-        <div key={loc.id} className="mb-6 p-4 border rounded-md shadow-sm bg-white">
+        <div key={loc.id} className="mb-6 p-4 border rounded-md shadow-sm bg-card">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold text-lg">{loc.name}</h3>
-            <span className="text-sm text-gray-500 font-medium">Costo Elettricità: €{loc.electricity_cost_kwh} / kWh</span>
+            <span className="text-sm text-muted-foreground font-medium">Costo Elettricità: €{loc.electricity_cost_kwh} / kWh</span>
           </div>
           
           <h4 className="text-sm font-semibold mb-2">Macchine collegate:</h4>
           {loc.printers && loc.printers.length > 0 ? (
             <div className="space-y-2">
               {loc.printers.map((p: any) => (
-                <div key={p.id} className="flex justify-between items-center bg-gray-50 p-2 px-3 border rounded text-sm">
+                <div key={p.id} className="flex justify-between items-center bg-muted p-2 px-3 border rounded text-sm">
                   <span className="font-medium">{p.model_name}</span>
                   <div className="flex gap-4">
                     <span className="text-orange-600 font-mono">{p.power_consumption_w} W</span>
