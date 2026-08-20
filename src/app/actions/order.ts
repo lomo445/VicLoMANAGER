@@ -10,41 +10,71 @@ export async function createOrder(formData: FormData) {
   const rawData = {
     client_name: formData.get('client_name') as string,
     client_contact: formData.get('client_contact') as string,
-    product_id: formData.get('product_id') as string,
-    custom_notes: formData.get('custom_notes') as string,
+    custom_notes: formData.get('custom_notes') as string || '',
     commission_date: formData.get('commission_date') as string,
     expected_delivery_date: formData.get('expected_delivery_date') as string || null,
     status: formData.get('status') as string || 'da_stampare',
   }
 
+  const orderItemsString = formData.get('order_items') as string
+  const orderItems = orderItemsString ? JSON.parse(orderItemsString) : []
+  
+  if (orderItems.length === 0) throw new Error("Order must have at least one product")
+
   const extrasString = formData.get('extras') as string
   const selectedExtras = extrasString ? JSON.parse(extrasString) : []
 
-  const { data: product } = await supabase.from('products').select('*').eq('id', rawData.product_id).single()
+  // Calculate totals
+  let totalProdCost = 0
+  let totalSellPrice = 0
+
+  const { data: allProducts } = await supabase.from('products').select('*')
   
-  const electricalCost = 0.50 
-  const materialCost = product ? (product.base_weight_g / 1000) * 20 : 0 
+  const finalItemsToInsert = []
+
+  for (const item of orderItems) {
+    const product = allProducts?.find(p => p.id === item.product_id)
+    if (product) {
+      const materialCost = (product.base_weight_g / 1000) * 20 
+      const electricalCost = 0.50 
+      const costPerUnit = calculateTotalProductionCost(electricalCost, materialCost, 0)
+      
+      totalProdCost += costPerUnit * item.quantity
+      totalSellPrice += product.base_selling_price * item.quantity
+      
+      finalItemsToInsert.push({
+        product_id: product.id,
+        quantity: item.quantity,
+        unit_price: product.base_selling_price,
+        unit_cost: costPerUnit
+      })
+    }
+  }
   
   const extrasCost = selectedExtras.reduce((acc: number, curr: any) => acc + (curr.unit_cost * curr.quantity), 0)
-  const extrasSurcharge = 0 // Fixed per user request
+  totalProdCost += extrasCost
   
-  const calculated_production_cost = calculateTotalProductionCost(electricalCost, materialCost, extrasCost)
-  const final_selling_price = calculateFinalSellingPrice(product?.base_selling_price || 0, extrasSurcharge)
-  
+  // Insert main order
   const { data: order, error: orderError } = await supabase.from('orders').insert([{
     ...rawData,
-    final_selling_price,
-    calculated_production_cost,
+    final_selling_price: totalSellPrice,
+    calculated_production_cost: totalProdCost,
   }]).select().single()
   
   if (orderError) throw new Error('Failed to create order: ' + orderError.message)
   
+  // Insert order items
+  const itemsWithOrderId = finalItemsToInsert.map(item => ({ ...item, order_id: order.id }))
+  const { error: itemsError } = await supabase.from('order_items').insert(itemsWithOrderId)
+  if (itemsError) console.error("Error inserting order items:", itemsError)
+
+  // Insert extras
   if (selectedExtras.length > 0 && order) {
     const extrasToInsert = selectedExtras.map((ex: any) => ({
       order_id: order.id,
       name: ex.name,
       unit_cost: ex.unit_cost,
-      unit_price: ex.unit_price,
+      unit_price: 0, // Forced to 0
       quantity: ex.quantity,
     }))
     const { error: extrasError } = await supabase.from('order_extras').insert(extrasToInsert)
