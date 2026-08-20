@@ -84,3 +84,11 @@ export async function createOrder(formData: FormData) {
   revalidatePath('/orders')
   revalidatePath('/') 
 }
+
+export async function deleteOrder(id: string) {
+  const supabase = createClient()
+  const { error } = await supabase.from('orders').delete().eq('id', id)
+  if (error) throw new Error(error.message)
+  revalidatePath('/orders')
+  revalidatePath('/')
+}

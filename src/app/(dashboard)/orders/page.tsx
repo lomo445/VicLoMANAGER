@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server"
 import { NewOrderDialog } from "@/components/orders/NewOrderDialog"
 import { AlertTriangle } from "lucide-react"
+import { DeleteButton } from "@/components/ui-custom/DeleteButton"
+import { deleteOrder } from "@/app/actions/order"
 
 export default async function OrdersPage() {
   const supabase = createClient()
@@ -29,6 +31,7 @@ export default async function OrdersPage() {
                 <th className="pb-3 px-2">Consegna Prevista</th>
                 <th className="pb-3 px-2">Status</th>
                 <th className="pb-3 px-2 text-right">Prezzo Finale</th>
+                <th className="pb-3 px-2 text-right">Azioni</th>
               </tr>
             </thead>
             <tbody>
@@ -69,6 +72,9 @@ export default async function OrdersPage() {
                       </span>
                     </td>
                     <td className="py-3 px-2 text-right font-semibold text-green-500">€{order.final_selling_price}</td>
+                    <td className="py-3 px-2 text-right">
+                      <DeleteButton id={order.id} actionFn={deleteOrder} />
+                    </td>
                   </tr>
                 )
               })}
