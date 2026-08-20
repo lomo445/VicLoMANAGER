@@ -1,5 +1,8 @@
 import { createClient } from "@/lib/supabase/server"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { NewMaterialDialog } from "@/components/inventory/NewMaterialDialog"
+import { NewProductDialog } from "@/components/inventory/NewProductDialog"
+import { NewExtraDialog } from "@/components/inventory/NewExtraDialog"
 
 export default async function InventoryPage() {
   const supabase = createClient()
@@ -18,8 +21,10 @@ export default async function InventoryPage() {
           <TabsTrigger value="extras">Catalogo Extra</TabsTrigger>
         </TabsList>
         <TabsContent value="materials" className="bg-white p-6 rounded-md border shadow-sm mt-4">
-          <h2 className="text-xl font-semibold mb-4">Bobine (Filamento)</h2>
-          {/* List materials here */}
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Bobine (Filamento)</h2>
+            <NewMaterialDialog />
+          </div>
           {materials?.map((m: any) => (
             <div key={m.id} className="flex justify-between py-2 border-b last:border-0">
               <div className="flex items-center gap-2">
@@ -29,24 +34,33 @@ export default async function InventoryPage() {
               <span className="font-mono text-sm">{m.current_stock_g}g / {m.spool_weight_g}g</span>
             </div>
           ))}
+          {materials?.length === 0 && <p className="text-muted-foreground text-sm">Nessuna bobina presente.</p>}
         </TabsContent>
         <TabsContent value="products" className="bg-white p-6 rounded-md border shadow-sm mt-4">
-          <h2 className="text-xl font-semibold mb-4">Prodotti Base</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Prodotti Base</h2>
+            <NewProductDialog />
+          </div>
           {products?.map((p: any) => (
              <div key={p.id} className="flex justify-between py-2 border-b last:border-0">
                <span>{p.name} ({p.type})</span>
                <span>€{p.base_selling_price}</span>
              </div>
           ))}
+          {products?.length === 0 && <p className="text-muted-foreground text-sm">Nessun prodotto base inserito.</p>}
         </TabsContent>
         <TabsContent value="extras" className="bg-white p-6 rounded-md border shadow-sm mt-4">
-          <h2 className="text-xl font-semibold mb-4">Catalogo Accessori Extra</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold">Catalogo Accessori Extra</h2>
+            <NewExtraDialog />
+          </div>
           {extras?.map((e: any) => (
              <div key={e.id} className="flex justify-between py-2 border-b last:border-0">
                <span>{e.name}</span>
-               <span>Costo: €{e.default_cost} / Prezzo: €{e.default_price}</span>
+               <span className="text-sm text-gray-500">Costo: €{e.default_cost} / Prezzo al cliente: €{e.default_price}</span>
              </div>
           ))}
+          {extras?.length === 0 && <p className="text-muted-foreground text-sm">Nessun extra nel catalogo.</p>}
         </TabsContent>
       </Tabs>
     </div>
