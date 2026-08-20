@@ -67,7 +67,7 @@ export async function createOrder(formData: FormData) {
     }
   }
   
-  const extrasCost = selectedExtras.reduce((acc: number, curr: any) => acc + (curr.unit_cost * curr.quantity), 0)
+  const extrasCost = selectedExtras.reduce((acc: number, curr: any) => acc + (curr.default_cost * curr.quantity), 0)
   totalProdCost += extrasCost
   
   // Insert main order
@@ -89,7 +89,7 @@ export async function createOrder(formData: FormData) {
     const extrasToInsert = selectedExtras.map((ex: any) => ({
       order_id: order.id,
       name: ex.name,
-      unit_cost: ex.unit_cost,
+      unit_cost: ex.default_cost,
       unit_price: 0, // Forced to 0
       quantity: ex.quantity,
     }))
