@@ -28,7 +28,7 @@ export default async function InventoryPage() {
 
         <TabsContent value="products" className="mt-6">
           <div className="flex justify-end mb-4">
-            <NewProductDialog materials={materials || []} />
+            <NewProductDialog />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {products?.map(p => (
